@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPO Risk Factor Draft Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 90%;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        textarea {
+            resize: vertical;
+            min-height: 100px; /* Adjusted min-height for textareas */
+        }
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .message-box {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none; /* Hidden by default */
+            font-weight: 500;
+        }
+        .message-box.error {
+            background-color: #fee2e2;
+            color: #ef4444;
+            border: 1px solid #fca5a5;
+        }
+        .message-box.info {
+            background-color: #e0f2fe;
+            color: #0c4a6e;
+            border: 1px solid #a7d0ee;
+        }
+        .message-box.warning {
+            background-color: #fffbeb;
+            color: #b45309;
+            border: 1px solid #fcd34d;
+        }
+        /* Style for generated risk factors */
+        .risk-factor-output h3 {
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 1.25rem; /* text-xl */
+            color: #1e293b; /* slate-800 */
+        }
+        .risk-factor-output p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+            color: #334155; /* slate-700 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="container w-full lg:w-4/5 xl:w-3/4">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">📝 IPO Risk Factor Draft Generator 📈</h1>
+
+        <!-- Message Box for user feedback -->
+        <div id="messageBox" class="message-box"></div>
+
+        <form id="riskFactorForm" class="space-y-6">
+            <div>
+                <label for="specificRiskStatement" class="block text-gray-700 text-sm font-semibold mb-2">Specific Risk Statement to Elaborate On (Optional - if you only have one specific risk):</label>
+                <textarea id="specificRiskStatement" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Majority of net proceeds are to be funded for capex where quotations have been obtained but no firm arrangements. Or, Limited experience of promoter."></textarea>
+                <p class="text-sm text-gray-500 mt-1">If filled, the AI will prioritize generating detailed text for this specific risk. Leave blank to generate general risks based on company details below.</p>
+            </div>
+
+            <hr class="border-gray-300 my-6">
+
+            <p class="text-lg font-semibold text-gray-700 mb-4">Or provide general company details for broader risk factor generation:</p>
+
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="companyName" class="block text-gray-700 text-sm font-semibold mb-2">Company Name:</label>
+                    <input type="text" id="companyName" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Tech Innovations Inc.">
+                </div>
+                <div>
+                    <label for="industrySector" class="block text-gray-700 text-sm font-semibold mb-2">Industry / Sector:</label>
+                    <input type="text" id="industrySector" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., SaaS, Biotechnology, Fintech">
+                </div>
+            </div>
+
+            <div>
+                <label for="companyDescription" class="block text-gray-700 text-sm font-semibold mb-2">Brief Company Description (What does it do?):</label>
+                <textarea id="companyDescription" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Provides AI-powered cloud solutions for healthcare providers to manage patient data and diagnostics."></textarea>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="keyMarkets" class="block text-gray-700 text-sm font-semibold mb-2">Key Geographic Markets:</label>
+                    <input type="text" id="keyMarkets" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., North America, Europe, Asia-Pacific">
+                </div>
+                <div>
+                    <label for="competitiveLandscape" class="block text-gray-700 text-sm font-semibold mb-2">Competitive Landscape (e.g., highly competitive, few large players):</label>
+                    <input type="text" id="competitiveLandscape" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Highly fragmented with many startups and established giants.">
+                </div>
+            </div>
+
+            <div>
+                <label for="financialPerformance" class="block text-gray-700 text-sm font-semibold mb-2">Financial Performance / Trends (e.g., rapid growth, not yet profitable, declining margins, significant debt):</label>
+                <textarea id="financialPerformance" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Achieved rapid revenue growth in last 3 years, but has incurred significant losses due to aggressive R&D investment."></textarea>
+            </div>
+
+            <div>
+                <label for="regulatoryEnvironment" class="block text-gray-700 text-sm font-semibold mb-2">Regulatory & Legal Environment (e.g., highly regulated, new upcoming regulations, potential litigation):</label>
+                <textarea id="regulatoryEnvironment" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Subject to strict data privacy regulations (GDPR, CCPA), and ongoing discussions about AI ethics laws."></textarea>
+            </div>
+
+            <div>
+                <label for="technologyRisks" class="block text-gray-700 text-sm font-semibold mb-2">Technology & Cybersecurity Risks (e.g., reliance on proprietary tech, rapid obsolescence, cybersecurity threats):</label>
+                <textarea id="technologyRisks" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Business heavily relies on its patented AI algorithms which could be challenged or become obsolete quickly. Faces continuous threat of cyberattacks."></textarea>
+            </div>
+
+            <div>
+                <label for="managementRisks" class="block text-gray-700 text-sm font-semibold mb-2">Management & Personnel Risks (e.g., reliance on key individuals, difficulty retaining talent, lack of depth):</label>
+                <textarea id="managementRisks" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Success heavily dependent on the continued service of its founder and CEO. High competition for skilled AI engineers."></textarea>
+            </div>
+
+            <div>
+                <label for="otherConcerns" class="block text-gray-700 text-sm font-semibold mb-2">Other General Concerns / Risks (Any unique risks not covered above, *not* a specific risk statement):</label>
+                <textarea id="otherConcerns" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., High exposure to foreign currency fluctuations. Dependence on a single third-party chip manufacturer."></textarea>
+            </div>
+
+            <button
+                type="submit"
+                id="generateBtn"
+                class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-300 ease-in-out font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 flex items-center justify-center"
+            >
+                <span id="buttonText">Generate Draft Risk Factors</span>
+                <div id="loadingSpinner" class="loading-spinner hidden ml-3"></div>
+            </button>
+        </form>
+
+        <div id="riskFactorOutput" class="mt-10 hidden">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Generated Draft Risk Factors</h2>
+            <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                <div id="generatedContent" class="risk-factor-output prose max-w-none">
+                    <!-- Generated risk factors will be inserted here -->
+                </div>
+                <button
+                    id="copyBtn"
+                    class="mt-6 bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300 ease-in-out font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+                >
+                    Copy to Clipboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const riskFactorForm = document.getElementById('riskFactorForm');
+            const generateBtn = document.getElementById('generateBtn');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const buttonText = document.getElementById('buttonText');
+            const messageBox = document.getElementById('messageBox');
+            const riskFactorOutput = document.getElementById('riskFactorOutput');
+            const generatedContent = document.getElementById('generatedContent');
+            const copyBtn = document.getElementById('copyBtn');
+
+            // Removed API_KEY as it will be handled by the Netlify Function securely
+            const API_MODEL = "gemini-2.5-flash-preview-05-20"; // LLM model to use
+
+            /**
+             * Shows a message in the message box.
+             * @param {string} message - The message to display.
+             * @param {string} type - The type of message ('info', 'warning', 'error', 'success').
+             */
+            function showMessage(message, type = 'info') {
+                messageBox.textContent = message;
+                messageBox.className = `message-box ${type}`;
+                messageBox.style.display = 'block';
+            }
+
+            /**
+             * Hides the message box.
+             */
+            function hideMessageBox() {
+                messageBox.style.display = 'none';
+            }
+
+            /**
+             * Debounces a function call.
+             * @param {Function} func - The function to debounce.
+             * @param {number} delay - The delay in milliseconds.
+             * @returns {Function} The debounced function.
+             */
+            function debounce(func, delay) {
+                let timeout;
+                return function(...args) {
+                    const context = this;
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(context, args), delay);
+                };
+            }
+
+            /**
+             * Handles exponential backoff for API retries.
+             * @param {Function} fn - The function to retry.
+             * @param {number} retries - Number of retries left.
+             * @param {number} delay - Current delay for retry.
+             */
+            async function retryWithBackoff(fn, retries = 3, delay = 1000) {
+                try {
+                    return await fn();
+                } catch (error) {
+                    if (retries > 0) {
+                        console.warn(`Retrying in ${delay / 1000}s... (${retries} retries left)`);
+                        await new Promise(res => setTimeout(res, delay));
+                        return retryWithBackoff(fn, retries - 1, delay * 2);
+                    } else {
+                        throw error;
+                    }
+                }
+            }
+
+            /**
+             * Generates the prompt for the LLM based on user input.
+             * It prioritizes a specific risk statement if provided.
+             * @returns {string} The constructed prompt.
+             */
+            function generatePrompt() {
+                const specificRiskStatement = document.getElementById('specificRiskStatement').value.trim();
+                const companyName = document.getElementById('companyName').value.trim();
+                const industrySector = document.getElementById('industrySector').value.trim();
+                const companyDescription = document.getElementById('companyDescription').value.trim();
+                const keyMarkets = document.getElementById('keyMarkets').value.trim();
+                const competitiveLandscape = document.getElementById('competitiveLandscape').value.trim();
+                const financialPerformance = document.getElementById('financialPerformance').value.trim();
+                const regulatoryEnvironment = document.getElementById('regulatoryEnvironment').value.trim();
+                const technologyRisks = document.getElementById('technologyRisks').value.trim();
+                const managementRisks = document.getElementById('managementRisks').value.trim();
+                const otherConcerns = document.getElementById('otherConcerns').value.trim();
+
+                let prompt = `As an expert legal drafter specializing in IPO documents, draft comprehensive "Risk Factors" for an offer document. The tone should be formal, cautious, and disclose potential risks clearly and concisely. Group similar risks and provide detailed explanations for each.`;
+
+                if (specificRiskStatement) {
+                    prompt += `\n\n**Elaborate on the following specific risk for an IPO prospectus:** "${specificRiskStatement}"
+                    \nExplain its implications for the company and potential investors. Provide this as one single, detailed risk factor with a suitable heading.`;
+
+                    // If company name is provided, include it for better context
+                    if (companyName) {
+                        prompt += `\n\nCompany Name: ${companyName}`;
+                    }
+
+                } else {
+                    // Original prompt logic for general risk factor generation
+                    prompt += `\n\nHere is the company information:
+
+- Company Name: ${companyName || 'Not specified'}
+- Industry/Sector: ${industrySector || 'Not specified'}
+- Company Description: ${companyDescription || 'Not provided'}
+- Key Geographic Markets: ${keyMarkets || 'Global'}
+- Competitive Landscape: ${competitiveLandscape || 'Typical for the industry'}
+- Financial Performance/Trends: ${financialPerformance || 'Stable financial performance'}
+- Regulatory & Legal Environment: ${regulatoryEnvironment || 'Standard regulatory environment'}
+- Technology & Cybersecurity Risks: ${technologyRisks || 'Standard technology risks'}
+- Management & Personnel Risks: ${managementRisks || 'Standard management risks'}
+${otherConcerns ? `- Other General Concerns: ${otherConcerns}\n` : ''}
+
+Generate at least 5-7 distinct risk factors, each with a clear heading (e.g., "Risks Related to Our Industry") and a detailed paragraph explaining the risk. Focus on potential negative impacts and uncertainties. Do not include any introductory or concluding remarks outside the risk factors themselves.
+`;
+                }
+
+                return prompt;
+            }
+
+            /**
+             * Makes the API call to the Netlify Function.
+             * @param {string} prompt - The prompt for the LLM.
+             * @returns {Promise<string>} The generated text.
+             */
+            async function callGeminiAPI(prompt) {
+                // IMPORTANT: This now calls your Netlify Function endpoint
+                const response = await fetch('/.netlify/functions/generate-risk', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: prompt }) // Send the prompt in the request body
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error("Netlify Function Error Response:", errorData);
+                    throw new Error(`Function call failed: ${response.status} ${response.statusText} - ${errorData.message || 'Unknown error'}`);
+                }
+
+                const result = await response.json();
+                // The Netlify function will return an object with a 'text' property
+                if (result && result.text !== undefined) { // Check for undefined to allow empty string results
+                    return result.text;
+                } else {
+                    console.error("Unexpected Netlify Function response structure:", result);
+                    throw new Error("Could not get a valid text response from the Netlify Function. Please check your Netlify function logs for more details.");
+                }
+            }
+
+            // Handle form submission
+            riskFactorForm.addEventListener('submit', debounce(async (e) => {
+                e.preventDefault(); // Prevent default form submission
+
+                hideMessageBox(); // Hide any previous messages
+
+                const specificRiskStatement = document.getElementById('specificRiskStatement').value.trim();
+                const companyName = document.getElementById('companyName').value.trim();
+
+                // If no specific risk is given, but company name is also empty, require company name
+                if (!specificRiskStatement && !companyName) {
+                    showMessage('Please enter either a Specific Risk Statement OR the Company Name to generate risk factors.', 'error');
+                    return;
+                }
+
+                // Show loading state
+                buttonText.textContent = 'Generating...';
+                loadingSpinner.classList.remove('hidden');
+                generateBtn.disabled = true;
+                riskFactorOutput.classList.add('hidden'); // Hide previous output
+                generatedContent.innerHTML = ''; // Clear previous content
+
+                try {
+                    const prompt = generatePrompt();
+                    console.log("Prompt sent to Netlify Function:", prompt); // Log the prompt for debugging
+                    showMessage('Generating draft risk factors... This may take a moment.', 'info');
+
+                    const generatedText = await retryWithBackoff(() => callGeminiAPI(prompt));
+                    console.log("Raw text received from Netlify Function:", generatedText); // Log raw text for debugging
+
+                    if (!generatedText || generatedText.trim() === '') {
+                        showMessage('The AI did not generate any risk factors based on your input. Please try again with different or more detailed information.', 'warning');
+                        return; // Exit if no text is generated
+                    }
+
+                    // Simple markdown-like to HTML conversion
+                    // This attempts to convert bolded lines to H3 headings and other lines to paragraphs.
+                    // It's a basic parser and might need refinement for more complex markdown.
+                    const formattedHtml = generatedText
+                        .split('\n')
+                        .map(line => {
+                            line = line.trim();
+                            if (line.startsWith('**') && line.endsWith('**')) {
+                                return `<h3>${line.substring(2, line.length - 2).trim()}</h3>`;
+                            } else if (line.startsWith('- ')) { // Basic list item
+                                return `<li>${line.substring(2).trim()}</li>`;
+                            } else if (line.match(/^\d+\.\s/)) { // Numbered list item
+                                return `<li>${line.substring(line.indexOf('.') + 1).trim()}</li>`;
+                            }
+                            else if (line !== '') { // Treat non-empty lines as paragraphs
+                                return `<p>${line}</p>`;
+                            }
+                            return ''; // Ignore empty lines if not part of a list
+                        })
+                        .filter(Boolean) // Remove any empty strings resulting from mapping
+                        .join('');
+
+                    console.log("Formatted HTML for display:", formattedHtml); // Log formatted HTML for debugging
+
+                    // Fallback if formatting results in empty content
+                    if (formattedHtml.trim() === '') {
+                        showMessage('The AI generated text but it could not be formatted into visible content. Displaying raw text. Please check console for raw output.', 'warning');
+                        generatedContent.innerText = generatedText; // Fallback to raw text if formatting fails
+                    } else {
+                        generatedContent.innerHTML = formattedHtml;
+                    }
+
+                    riskFactorOutput.classList.remove('hidden'); // Show output section
+                    showMessage('Draft risk factors generated. Please review and edit as needed.', 'info');
+                } catch (error) {
+                    console.error("Error generating risk factors:", error);
+                    showMessage(`Failed to generate risk factors: ${error.message}. Please try again. If the issue persists, check your Netlify function logs for more details.`, 'error');
+                } finally {
+                    // Reset button state
+                    buttonText.textContent = 'Generate Draft Risk Factors';
+                    loadingSpinner.classList.add('hidden');
+                    generateBtn.disabled = false;
+                }
+            }, 500)); // Debounce form submission
+
+            // Copy to clipboard functionality
+            copyBtn.addEventListener('click', () => {
+                const textToCopy = generatedContent.innerText; // Get plain text from the generated content div
+                if (textToCopy) {
+                    // Create a temporary textarea to copy text to clipboard as navigator.clipboard.writeText
+                    // might not work in all iframe contexts (though it typically does locally).
+                    const tempTextArea = document.createElement("textarea");
+                    tempTextArea.value = textToCopy;
+                    document.body.appendChild(tempTextArea);
+                    tempTextArea.select();
+                    document.execCommand('copy'); // Fallback for clipboard copy
+                    document.body.removeChild(tempTextArea);
+                    showMessage('Risk factors copied to clipboard!', 'info');
+                } else {
+                    showMessage('No content to copy.', 'warning');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
