@@ -19,9 +19,13 @@
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
-        textarea {
-            resize: vertical;
+        textarea, input[type="text"] {
+            resize: vertical; /* Only for textarea, but applied to both for consistency */
             min-height: 100px; /* Adjusted min-height for textareas */
+            /* Added for compatibility and appearance */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
         }
         .loading-spinner {
             border: 4px solid #f3f3f3;
@@ -39,7 +43,7 @@
             padding: 1rem;
             border-radius: 8px;
             margin-bottom: 1rem;
-            display: none; /* Hidden by default */
+            /* Inline style for display handled by JS, but base style here */
             font-weight: 500;
         }
         .message-box.error {
@@ -78,12 +82,12 @@
         <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">📝 IPO Risk Factor Draft Generator 📈</h1>
 
         <!-- Message Box for user feedback -->
-        <div id="messageBox" class="message-box"></div>
+        <div id="messageBox" class="message-box" role="status" aria-live="polite" style="display: none;"></div>
 
         <form id="riskFactorForm" class="space-y-6">
             <div>
                 <label for="specificRiskStatement" class="block text-gray-700 text-sm font-semibold mb-2">Specific Risk Statement to Elaborate On (Optional - if you only have one specific risk):</label>
-                <textarea id="specificRiskStatement" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Majority of net proceeds are to be funded for capex where quotations have been obtained but no firm arrangements. Or, Limited experience of promoter."></textarea>
+                <textarea id="specificRiskStatement" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Majority of net proceeds are to be funded for capex where quotations have been obtained but no firm arrangements. Or, Limited experience of promoter." aria-label="Specific risk statement to elaborate on"></textarea>
                 <p class="text-sm text-gray-500 mt-1">If filled, the AI will prioritize generating detailed text for this specific risk. Leave blank to generate general risks based on company details below.</p>
             </div>
 
@@ -95,53 +99,53 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label for="companyName" class="block text-gray-700 text-sm font-semibold mb-2">Company Name:</label>
-                    <input type="text" id="companyName" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Tech Innovations Inc.">
+                    <input type="text" id="companyName" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Tech Innovations Inc." aria-label="Company name">
                 </div>
                 <div>
                     <label for="industrySector" class="block text-gray-700 text-sm font-semibold mb-2">Industry / Sector:</label>
-                    <input type="text" id="industrySector" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., SaaS, Biotechnology, Fintech">
+                    <input type="text" id="industrySector" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., SaaS, Biotechnology, Fintech" aria-label="Industry or sector">
                 </div>
             </div>
 
             <div>
                 <label for="companyDescription" class="block text-gray-700 text-sm font-semibold mb-2">Brief Company Description (What does it do?):</label>
-                <textarea id="companyDescription" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Provides AI-powered cloud solutions for healthcare providers to manage patient data and diagnostics."></textarea>
+                <textarea id="companyDescription" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Provides AI-powered cloud solutions for healthcare providers to manage patient data and diagnostics." aria-label="Brief company description"></textarea>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label for="keyMarkets" class="block text-gray-700 text-sm font-semibold mb-2">Key Geographic Markets:</label>
-                    <input type="text" id="keyMarkets" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., North America, Europe, Asia-Pacific">
+                    <input type="text" id="keyMarkets" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., North America, Europe, Asia-Pacific" aria-label="Key geographic markets">
                 </div>
                 <div>
                     <label for="competitiveLandscape" class="block text-gray-700 text-sm font-semibold mb-2">Competitive Landscape (e.g., highly competitive, few large players):</label>
-                    <input type="text" id="competitiveLandscape" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Highly fragmented with many startups and established giants.">
+                    <input type="text" id="competitiveLandscape" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Highly fragmented with many startups and established giants." aria-label="Competitive landscape">
                 </div>
             </div>
 
             <div>
                 <label for="financialPerformance" class="block text-gray-700 text-sm font-semibold mb-2">Financial Performance / Trends (e.g., rapid growth, not yet profitable, declining margins, significant debt):</label>
-                <textarea id="financialPerformance" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Achieved rapid revenue growth in last 3 years, but has incurred significant losses due to aggressive R&D investment."></textarea>
+                <textarea id="financialPerformance" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Achieved rapid revenue growth in last 3 years, but has incurred significant losses due to aggressive R&D investment." aria-label="Financial performance and trends"></textarea>
             </div>
 
             <div>
                 <label for="regulatoryEnvironment" class="block text-gray-700 text-sm font-semibold mb-2">Regulatory & Legal Environment (e.g., highly regulated, new upcoming regulations, potential litigation):</label>
-                <textarea id="regulatoryEnvironment" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Subject to strict data privacy regulations (GDPR, CCPA), and ongoing discussions about AI ethics laws."></textarea>
+                <textarea id="regulatoryEnvironment" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Subject to strict data privacy regulations (GDPR, CCPA), and ongoing discussions about AI ethics laws." aria-label="Regulatory and legal environment"></textarea>
             </div>
 
             <div>
                 <label for="technologyRisks" class="block text-gray-700 text-sm font-semibold mb-2">Technology & Cybersecurity Risks (e.g., reliance on proprietary tech, rapid obsolescence, cybersecurity threats):</label>
-                <textarea id="technologyRisks" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Business heavily relies on its patented AI algorithms which could be challenged or become obsolete quickly. Faces continuous threat of cyberattacks."></textarea>
+                <textarea id="technologyRisks" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Business heavily relies on its patented AI algorithms which could be challenged or become obsolete quickly. Faces continuous threat of cyberattacks." aria-label="Technology and cybersecurity risks"></textarea>
             </div>
 
             <div>
                 <label for="managementRisks" class="block text-gray-700 text-sm font-semibold mb-2">Management & Personnel Risks (e.g., reliance on key individuals, difficulty retaining talent, lack of depth):</label>
-                <textarea id="managementRisks" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Success heavily dependent on the continued service of its founder and CEO. High competition for skilled AI engineers."></textarea>
+                <textarea id="managementRisks" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Success heavily dependent on the continued service of its founder and CEO. High competition for skilled AI engineers." aria-label="Management and personnel risks"></textarea>
             </div>
 
             <div>
                 <label for="otherConcerns" class="block text-gray-700 text-sm font-semibold mb-2">Other General Concerns / Risks (Any unique risks not covered above, *not* a specific risk statement):</label>
-                <textarea id="otherConcerns" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., High exposure to foreign currency fluctuations. Dependence on a single third-party chip manufacturer."></textarea>
+                <textarea id="otherConcerns" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., High exposure to foreign currency fluctuations. Dependence on a single third-party chip manufacturer." aria-label="Other general concerns or risks"></textarea>
             </div>
 
             <button
@@ -190,6 +194,7 @@
              * @param {string} type - The type of message ('info', 'warning', 'error', 'success').
              */
             function showMessage(message, type = 'info') {
+                console.log(`showMessage: ${message} (Type: ${type})`); // DEBUG
                 messageBox.textContent = message;
                 messageBox.className = `message-box ${type}`;
                 messageBox.style.display = 'block';
@@ -199,6 +204,7 @@
              * Hides the message box.
              */
             function hideMessageBox() {
+                console.log('hideMessageBox: Hiding message box.'); // DEBUG
                 messageBox.style.display = 'none';
             }
 
@@ -224,14 +230,16 @@
              * @param {number} delay - Current delay for retry.
              */
             async function retryWithBackoff(fn, retries = 3, delay = 1000) {
+                console.log(`retryWithBackoff: Attempting function call. Retries left: ${retries}`); // DEBUG
                 try {
                     return await fn();
                 } catch (error) {
                     if (retries > 0) {
-                        console.warn(`Retrying in ${delay / 1000}s... (${retries} retries left)`);
+                        console.warn(`retryWithBackoff: Retrying in ${delay / 1000}s... (${retries} retries left)`, error); // DEBUG
                         await new Promise(res => setTimeout(res, delay));
                         return retryWithBackoff(fn, retries - 1, delay * 2);
                     } else {
+                        console.error("retryWithBackoff: Max retries reached, throwing error.", error); // DEBUG
                         throw error;
                     }
                 }
@@ -243,6 +251,7 @@
              * @returns {string} The constructed prompt.
              */
             function generatePrompt() {
+                console.log('generatePrompt: Generating prompt...'); // DEBUG
                 const specificRiskStatement = document.getElementById('specificRiskStatement').value.trim();
                 const companyName = document.getElementById('companyName').value.trim();
                 const industrySector = document.getElementById('industrySector').value.trim();
@@ -284,7 +293,7 @@ ${otherConcerns ? `- Other General Concerns: ${otherConcerns}\n` : ''}
 Generate at least 5-7 distinct risk factors, each with a clear heading (e.g., "Risks Related to Our Industry") and a detailed paragraph explaining the risk. Focus on potential negative impacts and uncertainties. Do not include any introductory or concluding remarks outside the risk factors themselves.
 `;
                 }
-
+                console.log('generatePrompt: Generated prompt string.'); // DEBUG
                 return prompt;
             }
 
@@ -294,31 +303,36 @@ Generate at least 5-7 distinct risk factors, each with a clear heading (e.g., "R
              * @returns {Promise<string>} The generated text.
              */
             async function callGeminiAPI(prompt) {
+                console.log('callGeminiAPI: Attempting fetch to Netlify Function...'); // DEBUG
                 // IMPORTANT: This now calls your Netlify Function endpoint
                 const response = await fetch('/.netlify/functions/generate-risk', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ prompt: prompt }) // Send the prompt in the request body
                 });
+                console.log('callGeminiAPI: Fetch response received. Status:', response.status); // DEBUG
 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    console.error("Netlify Function Error Response:", errorData);
+                    console.error("callGeminiAPI: Netlify Function Error Response:", errorData); // DEBUG
                     throw new Error(`Function call failed: ${response.status} ${response.statusText} - ${errorData.message || 'Unknown error'}`);
                 }
 
                 const result = await response.json();
+                console.log('callGeminiAPI: JSON result from Netlify Function:', result); // DEBUG
                 // The Netlify function will return an object with a 'text' property
                 if (result && result.text !== undefined) { // Check for undefined to allow empty string results
+                    console.log('callGeminiAPI: Successfully received text from function.'); // DEBUG
                     return result.text;
                 } else {
-                    console.error("Unexpected Netlify Function response structure:", result);
+                    console.error("callGeminiAPI: Unexpected Netlify Function response structure:", result); // DEBUG
                     throw new Error("Could not get a valid text response from the Netlify Function. Please check your Netlify function logs for more details.");
                 }
             }
 
             // Handle form submission
             riskFactorForm.addEventListener('submit', debounce(async (e) => {
+                console.log('Form submit event triggered.'); // DEBUG
                 e.preventDefault(); // Prevent default form submission
 
                 hideMessageBox(); // Hide any previous messages
@@ -329,8 +343,10 @@ Generate at least 5-7 distinct risk factors, each with a clear heading (e.g., "R
                 // If no specific risk is given, but company name is also empty, require company name
                 if (!specificRiskStatement && !companyName) {
                     showMessage('Please enter either a Specific Risk Statement OR the Company Name to generate risk factors.', 'error');
+                    console.log('Form validation failed: No input provided.'); // DEBUG
                     return;
                 }
+                console.log('Form validation passed.'); // DEBUG
 
                 // Show loading state
                 buttonText.textContent = 'Generating...';
@@ -338,17 +354,19 @@ Generate at least 5-7 distinct risk factors, each with a clear heading (e.g., "R
                 generateBtn.disabled = true;
                 riskFactorOutput.classList.add('hidden'); // Hide previous output
                 generatedContent.innerHTML = ''; // Clear previous content
+                console.log('UI updated to loading state.'); // DEBUG
 
                 try {
                     const prompt = generatePrompt();
-                    console.log("Prompt sent to Netlify Function:", prompt); // Log the prompt for debugging
+                    console.log("Prompt prepared for Netlify Function:", prompt); // DEBUG
                     showMessage('Generating draft risk factors... This may take a moment.', 'info');
 
                     const generatedText = await retryWithBackoff(() => callGeminiAPI(prompt));
-                    console.log("Raw text received from Netlify Function:", generatedText); // Log raw text for debugging
+                    console.log("Raw text received from Netlify Function via retryWithBackoff:", generatedText); // DEBUG
 
                     if (!generatedText || generatedText.trim() === '') {
                         showMessage('The AI did not generate any risk factors based on your input. Please try again with different or more detailed information.', 'warning');
+                        console.log('AI generated empty text.'); // DEBUG
                         return; // Exit if no text is generated
                     }
 
@@ -374,35 +392,38 @@ Generate at least 5-7 distinct risk factors, each with a clear heading (e.g., "R
                         .filter(Boolean) // Remove any empty strings resulting from mapping
                         .join('');
 
-                    console.log("Formatted HTML for display:", formattedHtml); // Log formatted HTML for debugging
+                    console.log("Formatted HTML for display:", formattedHtml); // DEBUG
 
                     // Fallback if formatting results in empty content
                     if (formattedHtml.trim() === '') {
                         showMessage('The AI generated text but it could not be formatted into visible content. Displaying raw text. Please check console for raw output.', 'warning');
                         generatedContent.innerText = generatedText; // Fallback to raw text if formatting fails
+                        console.log('Formatted HTML was empty, displaying raw text.'); // DEBUG
                     } else {
                         generatedContent.innerHTML = formattedHtml;
+                        console.log('Generated HTML content set.'); // DEBUG
                     }
 
                     riskFactorOutput.classList.remove('hidden'); // Show output section
                     showMessage('Draft risk factors generated. Please review and edit as needed.', 'info');
+                    console.log('Generation complete and output displayed.'); // DEBUG
                 } catch (error) {
-                    console.error("Error generating risk factors:", error);
+                    console.error("Error generating risk factors:", error); // DEBUG
                     showMessage(`Failed to generate risk factors: ${error.message}. Please try again. If the issue persists, check your Netlify function logs for more details.`, 'error');
                 } finally {
                     // Reset button state
                     buttonText.textContent = 'Generate Draft Risk Factors';
                     loadingSpinner.classList.add('hidden');
                     generateBtn.disabled = false;
+                    console.log('UI reset to initial state.'); // DEBUG
                 }
             }, 500)); // Debounce form submission
 
             // Copy to clipboard functionality
             copyBtn.addEventListener('click', () => {
+                console.log('Copy button clicked.'); // DEBUG
                 const textToCopy = generatedContent.innerText; // Get plain text from the generated content div
                 if (textToCopy) {
-                    // Create a temporary textarea to copy text to clipboard as navigator.clipboard.writeText
-                    // might not work in all iframe contexts (though it typically does locally).
                     const tempTextArea = document.createElement("textarea");
                     tempTextArea.value = textToCopy;
                     document.body.appendChild(tempTextArea);
@@ -410,11 +431,124 @@ Generate at least 5-7 distinct risk factors, each with a clear heading (e.g., "R
                     document.execCommand('copy'); // Fallback for clipboard copy
                     document.body.removeChild(tempTextArea);
                     showMessage('Risk factors copied to clipboard!', 'info');
+                    console.log('Content copied to clipboard.'); // DEBUG
                 } else {
                     showMessage('No content to copy.', 'warning');
+                    console.log('No content to copy.'); // DEBUG
                 }
             });
         });
     </script>
 </body>
 </html>
+```
+<br/>
+
+Most up-to-date Immersive Artifact for "generate-risk-js-code" is:
+
+```javascript
+// netlify/functions/generate-risk.js
+
+// This is your Netlify Function that acts as a secure proxy to the Gemini API.
+// It will be executed on Netlify's servers, keeping your API key secure.
+
+const fetch = require('node-fetch'); // Node.js built-in fetch or require 'node-fetch' if older Node.js runtime
+
+exports.handler = async function(event, context) {
+    // 1. Ensure the request method is POST.
+    if (event.httpMethod !== 'POST') {
+        return {
+            statusCode: 405,
+            body: JSON.stringify({ message: "Method Not Allowed. This function only accepts POST requests." })
+        };
+    }
+
+    // 2. Parse the request body to get the 'prompt' sent from your frontend.
+    let prompt;
+    try {
+        const body = JSON.parse(event.body);
+        prompt = body.prompt;
+    } catch (parseError) {
+        console.error("Error parsing request body:", parseError);
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ message: "Invalid JSON body." })
+        };
+    }
+
+    // 3. Validate that a prompt was actually sent.
+    if (!prompt) {
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ message: "Prompt is required in the request body." })
+        };
+    }
+
+    // 4. Retrieve the Gemini API Key securely from Netlify's environment variables.
+    // This key is NEVER exposed to the client-side browser.
+    const API_KEY = process.env.GEMINI_API_KEY; // This MUST match the variable name you set in Netlify settings.
+
+    if (!API_KEY) {
+        console.error("GEMINI_API_KEY environment variable is not set on Netlify.");
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ message: "Server API key is not configured. Please set GEMINI_API_KEY in Netlify environment variables." })
+        };
+    }
+
+    const API_MODEL = "gemini-2.5-flash-preview-05-20"; // Your chosen AI model.
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${API_MODEL}:generateContent?key=${API_KEY}`;
+
+    // 5. Prepare the payload for the Gemini API call.
+    let chatHistory = [];
+    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+    const payload = { contents: chatHistory };
+
+    // 6. Make the actual call to the Gemini API.
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        // 7. Handle non-OK responses from the Gemini API.
+        if (!response.ok) {
+            const errorBody = await response.json();
+            console.error("Error calling Gemini API:", response.status, response.statusText, errorBody);
+            return {
+                statusCode: response.status,
+                body: JSON.stringify({ message: `Error from AI service: ${response.statusText}`, details: errorBody })
+            };
+        }
+
+        const result = await response.json();
+
+        // 8. Extract the generated text from Gemini's response structure.
+        if (result.candidates && result.candidates.length > 0 &&
+            result.candidates[0].content && result.candidates[0].content.parts &&
+            result.candidates[0].content.parts.length > 0) {
+            const generatedText = result.candidates[0].content.parts[0].text;
+            // Return the extracted text to your frontend.
+            return {
+                statusCode: 200,
+                body: JSON.stringify({ text: generatedText })
+            };
+        } else {
+            // Handle cases where Gemini's response is valid but doesn't contain text.
+            console.warn("Gemini API returned an unexpected structure or no text:", result);
+            return {
+                statusCode: 200, // Still a successful call, but no text generated.
+                body: JSON.stringify({ text: "" }) // Send an empty string or a specific message.
+            };
+        }
+
+    } catch (error) {
+        // Handle network errors or other unexpected issues during the fetch call.
+        console.error("Network or unexpected error during AI API call:", error);
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ message: "Failed to connect to the AI service due to a server-side error.", error: error.message })
+        };
+    }
+};
